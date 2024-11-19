@@ -1,4 +1,8 @@
 # Databricks notebook source
+from pyspark.sql.functions import count
+
+# COMMAND ----------
+
 # read the data in silver_2
 
 # COMMAND ----------

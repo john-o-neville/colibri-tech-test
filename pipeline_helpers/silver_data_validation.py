@@ -1,4 +1,8 @@
 # Databricks notebook source
+from pyspark.sql.functions import col, mean, stddev, lit, abs
+
+# COMMAND ----------
+
 # 1. dates should be in the expected date range: not future dates, and not more than 30 days old
 # 2. turbine_id: 1-15
 # 3. wind_speed: 0-100

@@ -2,12 +2,7 @@
 from pyspark.sql.functions import (
   sequence,
   explode,
-  col,
-  lit,
-  count,
-  mean,
-  stddev,
-  abs
+  col
 )
 
 
