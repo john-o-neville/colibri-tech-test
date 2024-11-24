@@ -1,4 +1,12 @@
 # Databricks notebook source
+# MAGIC %md
+# MAGIC ## Load Bronze to Silver
+# MAGIC
+# MAGIC - denormalize timestamp to get date + hour
+# MAGIC - ensure all dates + hours + turbines are present
+
+# COMMAND ----------
+
 from pyspark.sql.functions import (
   sequence,
   explode,
