@@ -15,6 +15,12 @@ LOCATION 'abfss://gold@colibritechtestcleansed.dfs.core.windows.net/tables/';
 
 -- COMMAND ----------
 
+-- schema for the Views
+CREATE SCHEMA IF NOT EXISTS colibri_gold_views
+LOCATION 'abfss://gold@colibritechtestcleansed.dfs.core.windows.net/views/';
+
+-- COMMAND ----------
+
 -- MAGIC %md
 -- MAGIC ### Bronze
 
