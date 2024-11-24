@@ -4,7 +4,8 @@
 # MAGIC
 # MAGIC There is not enough detail in the requirements to be precise here.  So this code is provided as a demonstration of what is possible, and to be the basis for future discussion with stakeholders to elicit more detailed requirements.
 # MAGIC
-# MAGIC The standard Imputer uses the mean of the existing values to replace missing values.
+# MAGIC The standard Imputer uses the mean of the existing values to replace missing values.  
+# MAGIC (NB: for wind_direction this will nearly always result in 180 - so in a real situation it would be extra important to seek feedback from subject matter experts for a better way to impute missing values)
 
 # COMMAND ----------
 
@@ -44,8 +45,8 @@ impute_cols = [
 
 imputer = Imputer(
     strategy='median',
-    inputCols=impute_cols,
-    outputCols=impute_cols
+    inputCols = impute_cols,
+    outputCols = impute_cols
 )
 
 imputer_model = imputer.fit(pre_impute_df)
@@ -71,7 +72,6 @@ gold_turbine = DeltaTable.forName(spark, 'colibri_gold.turbine')
         AND target.reading_hour = source.reading_hour
         AND target.turbine_id = source.turbine_id '''
     )
-    .whenMatchedUpdateAll()
     .whenNotMatchedInsertAll()
     .execute()
 )

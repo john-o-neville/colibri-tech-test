@@ -8,7 +8,6 @@
 
 from datetime import datetime
 from pyspark.sql.functions import input_file_name, current_timestamp, lit
-from delta.tables import DeltaTable
 
 # COMMAND ----------
 

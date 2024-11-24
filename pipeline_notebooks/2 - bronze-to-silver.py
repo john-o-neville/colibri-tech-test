@@ -35,6 +35,10 @@ turbine_data_hours = (
 
 # COMMAND ----------
 
+turbine_data_hours.count()
+
+# COMMAND ----------
+
 # de-duplicate the Bronze data
 window_spec = (
   Window
@@ -48,6 +52,10 @@ turbine_dedup = (
   .filter('row_num = 1')
   .drop('row_num')
 )
+
+# COMMAND ----------
+
+turbine_dedup.count()
 
 # COMMAND ----------
 

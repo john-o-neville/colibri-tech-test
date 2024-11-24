@@ -43,6 +43,14 @@ validated_df = (
 
 # COMMAND ----------
 
+to_be_imputed_df = (
+    validated_df
+    .filter('wind_speed IS NULL')
+    .select(*valid_cols)
+)
+
+# COMMAND ----------
+
 # TODO: identify any columns with values outside of the 2nd percentile
 
 # COMMAND ----------
@@ -54,7 +62,7 @@ validated_df = (
 # COMMAND ----------
 
 # passed
-(
+passed_df = (
     validated_df
     .filter(
         (~col('_is_invalid_wind_speed'))
@@ -62,6 +70,7 @@ validated_df = (
         & (~col('_is_invalid_power_output'))
     )
     .select(*valid_cols)
+    .unionAll(to_be_imputed_df)
 )
 
 # COMMAND ----------
@@ -71,7 +80,7 @@ silver_valid = DeltaTable.forName(spark, 'colibri_silver.turbine_data_validated'
 (
     silver_valid.alias('target')
     .merge(
-        validated_df.alias('source'),
+        passed_df.alias('source'),
         '''target.reading_date = source.reading_date
         AND target.reading_hour = source.reading_hour
         AND target.turbine_id = source.turbine_id '''
