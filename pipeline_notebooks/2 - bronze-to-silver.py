@@ -3,39 +3,51 @@
 # MAGIC ## Load Bronze to Silver
 # MAGIC
 # MAGIC - denormalize timestamp to get date + hour
+# MAGIC - de-duplicate based on date + hour (take the latest reading)
 # MAGIC - ensure all dates + hours + turbines are present
 
 # COMMAND ----------
 
-from pyspark.sql.functions import (
-  sequence,
-  explode,
-  col
-)
-
+from pyspark.sql.functions import sequence, explode, col, row_number
+from pyspark.sql.window import Window
+from delta.tables import DeltaTable
 
 # COMMAND ----------
 
-bronze_turbine_data = (
-  spark.read
-  .table('colibri_bronze.turbine_data_csv_import')
-)
-
+bronze_turbine_data = DeltaTable.forName(spark, 'colibri_bronze.turbine_data_csv_import')
 
 # COMMAND ----------
 
 turbine_data_hours = (
-  bronze_turbine_data
+  bronze_turbine_data.toDF()
+  .filter('_is_moved_to_silver = False')
   .selectExpr(
-     'CAST(reading_timestamp AS DATE) AS reading_date',
-     'HOUR(reading_timestamp) AS reading_hour',
-     'turbine_id',
-     'wind_speed',
-     'wind_direction',
-     'power_output'
+    'reading_timestamp',
+    'CAST(reading_timestamp AS DATE) AS reading_date',
+    'HOUR(reading_timestamp) AS reading_hour',
+    'turbine_id',
+    'wind_speed',
+    'wind_direction',
+    'power_output'
   )
 )
 
+
+# COMMAND ----------
+
+# de-duplicate the Bronze data
+window_spec = (
+  Window
+  .partitionBy('turbine_id', 'reading_date', 'reading_hour')
+  .orderBy(col('reading_timestamp').desc())
+)
+
+turbine_dedup = (
+  turbine_data_hours
+  .withColumn('row_num', row_number().over(window_spec))
+  .filter('row_num = 1')
+  .drop('row_num')
+)
 
 # COMMAND ----------
 
@@ -48,7 +60,7 @@ turbine_data_hours = (
 # COMMAND ----------
 
 turbine_min_max_date = (
-  turbine_data_hours
+  turbine_dedup
   .selectExpr(
      'MIN(reading_date) AS min_date',
      'MAX(reading_date) AS max_date'
@@ -128,8 +140,30 @@ all_data = (
 
 # COMMAND ----------
 
+# MAGIC %md
+# MAGIC Merge the de-duplicate and complete data into the Silver table.  
+# MAGIC Mark the Bronze records as 'done'
+
+# COMMAND ----------
+
+dest_table = DeltaTable.forName(spark, 'colibri_silver.turbine_data_full')
+
 (
-  all_data.write
-  .mode('append')
-  .saveAsTable('colibri_silver.turbine_data_full')
+  dest_table.alias('target')
+  .merge(
+    all_data.alias('source'),
+    '''target.reading_date = source.reading_date
+    AND target.reading_hour = source.reading_hour
+    AND target.turbine_id = source.turbine_id '''
+  )
+  .whenMatchedUpdateAll()
+  .whenNotMatchedInsertAll()
+  .execute()
+)
+
+# COMMAND ----------
+
+bronze_turbine_data.update(
+  condition = '_is_moved_to_silver = False',
+  set = {'_is_moved_to_silver': 'true'}
 )

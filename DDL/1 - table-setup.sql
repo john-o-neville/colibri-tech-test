@@ -1,6 +1,6 @@
 -- Databricks notebook source
 -- MAGIC %md
--- MAGIC Schemas (aka Database)
+-- MAGIC ### Schemas (aka Database)
 
 -- COMMAND ----------
 
@@ -16,7 +16,7 @@ LOCATION 'abfss://gold@colibritechtestcleansed.dfs.core.windows.net/tables/';
 -- COMMAND ----------
 
 -- MAGIC %md
--- MAGIC Bronze
+-- MAGIC ### Bronze
 
 -- COMMAND ----------
 
@@ -38,7 +38,7 @@ CREATE TABLE IF NOT EXISTS colibri_bronze.turbine_data_csv_import
 -- COMMAND ----------
 
 -- MAGIC %md
--- MAGIC Silver
+-- MAGIC ### Silver
 
 -- COMMAND ----------
 
@@ -49,13 +49,58 @@ CREATE TABLE IF NOT EXISTS colibri_silver.turbine_data_full
   turbine_id        INT NOT NULL,
   wind_speed        DOUBLE,
   wind_direction    INT,
-  power_output      DOUBLE,
-
-  CONSTRAINT turbine_data_full_pk PRIMARY KEY (
-    reading_date,
-    reading_hour,
-    turbine_id
-  )
+  power_output      DOUBLE
 );
 
 -- IMPROVE: consider adding liquid clustering once the querying patterns are known
+-- When moved to UC, also add a constraint on the PK (reading_date, reading_hour, turbine_id)
+
+-- COMMAND ----------
+
+CREATE TABLE IF NOT EXISTS colibri_silver.turbine_data_validated
+(
+  reading_date    DATE NOT NULL,
+  reading_hour    INT NOT NULL,
+  turbine_id      INT NOT NULL,
+  wind_speed      DOUBLE,
+  wind_direction  INT,
+  power_output    DOUBLE
+);
+
+
+-- COMMAND ----------
+
+CREATE TABLE IF NOT EXISTS colibri_silver.turbine_data_quarantine
+(
+  reading_date                  DATE,
+  reading_hour                  INT,
+  turbine_id                    INT,
+  wind_speed                    DOUBLE,
+  wind_direction                INT,
+  power_output                  DOUBLE,
+  _is_invalid_wind_speed        BOOLEAN,
+  _is_invalid_wind_direction    BOOLEAN,
+  _is_invalid_power_output      BOOLEAN,
+  _validation_timestamp         TIMESTAMP
+);
+
+-- COMMAND ----------
+
+-- MAGIC %md
+-- MAGIC ### Gold
+
+-- COMMAND ----------
+
+CREATE TABLE IF NOT EXISTS colibri_gold.turbine
+(
+  reading_date                 DATE NOT NULL,
+  reading_hour                 INT NOT NULL,
+  turbine_id                   INT NOT NULL,
+  wind_speed                   DOUBLE,
+  wind_direction               INT,
+  power_output                 DOUBLE,
+  is_imputed_wind_speed        BOOLEAN,
+  is_imputed_wind_direction    BOOLEAN,
+  is_imputed_power_output      BOOLEAN
+);
+
