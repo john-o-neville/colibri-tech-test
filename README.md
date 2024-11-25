@@ -55,10 +55,16 @@ Reads the data in Bronze and:
 ### Workflow
 Databricks Workflows call the Bronze - Silver - Gold Notebooks in sequence.  It can also be set up on a schedule (e.g. daily) to process new files dropped in the Storage Container (NB: although adding a Schedule is out of scope for this exercise.  If the files will be uploaded more regularly than daily then a more elegant solution would be to use AutoLoader and stream the data from the file into the Lakehouse.)
 
-Screenshots of an example Workflow:
+**Screenshot of an example Workflow status:**
 ![20241125_workflow_status](https://github.com/user-attachments/assets/906af2b5-94f8-44ad-988e-a1d7297fdcd1)
-
+**Screenshot of an example Workflow Tasks:**
 ![20241125_workflow_run](https://github.com/user-attachments/assets/bbb9f683-cbcc-4b7b-9774-7aa66306b1af)
+
+### Dashboard
+The Gold layer can be accessed using any modern dashboarding tool (e.g. PowreBI, Looker, Sigma) and can also be presented using Databricks AI/BI Dashboards.  There is not enough information in the Instructions above to know the full requirements that users need, but an example of a starter dashboards is below.
+
+**Screenshot of an example Dashboard:**
+![20241125_dashboard](https://github.com/user-attachments/assets/60cc932a-df39-453d-8e7a-1bc67aa61518)
 
 
 ## Out of Scope
