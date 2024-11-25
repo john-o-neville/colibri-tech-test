@@ -44,13 +44,21 @@ Reads the data in Bronze and:
 - validates row completeness, and imputes missing values where necessary
 - validates data ranges
 
-  **Gold**
-  The 'presentable' version of the data.  The table includes columns indicating which rows had values imputed (for audit and data quality purposes), but these columns are not exposed in the View on top of the Gold table.
-  Dashboards read from the Views and provide an easily-accessible summary of the data including:
-  - min
-  - max
-  - avg
-  of each turbine per hour per day.
+**Gold**
+ The 'presentable' version of the data.  The table includes columns indicating which rows had values imputed (for audit and data quality purposes), but these columns are not exposed in the View on top of the Gold table.
+ Dashboards read from the Views and provide an easily-accessible summary of the data including:
+ - min
+ - max
+ - avg
+ of each turbine per hour per day.
+
+### Workflow
+Databricks Workflows call the Bronze - Silver - Gold Notebooks in sequence.  It can also be set up on a schedule (e.g. daily) to process new files dropped in the Storage Container (NB: although adding a Schedule is out of scope for this exercise.  If the files will be uploaded more regularly than daily then a more elegant solution would be to use AutoLoader and stream the data from the file into the Lakehouse.)
+
+Screenshots of an example Workflow:
+![20241125_workflow_status](https://github.com/user-attachments/assets/906af2b5-94f8-44ad-988e-a1d7297fdcd1)
+
+![20241125_workflow_run](https://github.com/user-attachments/assets/bbb9f683-cbcc-4b7b-9774-7aa66306b1af)
 
 
 ## Out of Scope
