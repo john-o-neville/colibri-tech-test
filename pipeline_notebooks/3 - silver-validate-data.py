@@ -51,10 +51,6 @@ to_be_imputed_df = (
 
 # COMMAND ----------
 
-# TODO: identify any columns with values outside of the 2nd percentile
-
-# COMMAND ----------
-
 # MAGIC %md
 # MAGIC Write rows that pass all tests to the _validated table.  
 # MAGIC Write rows that don't pass to the _quarantine table for further investigation.
