@@ -61,7 +61,7 @@ Databricks Workflows call the Bronze - Silver - Gold Notebooks in sequence.  It 
 ![20241125_workflow_run](https://github.com/user-attachments/assets/bbb9f683-cbcc-4b7b-9774-7aa66306b1af)
 
 ### Dashboard
-The Gold layer can be accessed using any modern dashboarding tool (e.g. PowerBI, Looker, Sigma) and can also be presented using Databricks AI/BI Dashboards.  There is not enough information in the Instructions above to know the full requirements that users need, but an example of a starter dashboards is below.
+The Gold layer can be accessed using any modern dashboarding tool (e.g. PowerBI, Looker, Sigma) and can also be presented using Databricks AI/BI Dashboards.  There is not enough information in the Instructions above to know the full requirements that users need, but an example of a starter dashboard is below.
 
 **Screenshot of an example Dashboard:**
 ![20241125_dashboard](https://github.com/user-attachments/assets/60cc932a-df39-453d-8e7a-1bc67aa61518)
