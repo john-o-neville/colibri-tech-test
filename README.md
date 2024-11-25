@@ -2,6 +2,7 @@
 Public repo of code for the Colibri technical test.
 
 ## Instructions
+<p>
 Consider the following scenario:
 You are a data engineer for a renewable energy company that operates a farm of wind turbines.
 The turbines generate power based on wind speed and direction, and their output is measured in megawatts (MW). 
@@ -18,6 +19,9 @@ The files provided in the attachment represent a valid set for a month of data r
 Your pipeline should be scalable and testable; emphasis is based on the clarity and quality of the code and the implementation of the functionality outlined above, and not on the overall design of the application.
 
 Your solution should be implemented in Python, using any frameworks or libraries that you deem appropriate. Please provide a brief description of your solution design and any assumptions made in your implementation.
+</p>
+
+<hr />
 
 ## Solution
 
