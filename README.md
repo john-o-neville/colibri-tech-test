@@ -2,7 +2,7 @@
 Public repo of code for the Colibri technical test.
 
 ## Instructions
-<p>
+<i>
 Consider the following scenario:
 You are a data engineer for a renewable energy company that operates a farm of wind turbines.
 The turbines generate power based on wind speed and direction, and their output is measured in megawatts (MW). 
@@ -19,30 +19,38 @@ The files provided in the attachment represent a valid set for a month of data r
 Your pipeline should be scalable and testable; emphasis is based on the clarity and quality of the code and the implementation of the functionality outlined above, and not on the overall design of the application.
 
 Your solution should be implemented in Python, using any frameworks or libraries that you deem appropriate. Please provide a brief description of your solution design and any assumptions made in your implementation.
-</p>
+</i>
 
 <hr />
 
 ## Solution
 
 ### Tech
-The solution will use Databricks as the primary platform for ingesting, transforming, and storing the data in the final database.  
-Code is kept in Notebooks and written in PySpark.  The final database can be accessed using a SQL Warehouse and the SQL language, which analysts are commonly more familiar with.
+The solution uses Databricks as the primary platform for ingesting, transforming, and storing the data in the final database.  
+Pipeline code is in Notebooks, written in PySpark, and checked-in to this GitHub repo.  DDL code is in SQL, and also checked into this repo.  The Gold tier is accessible from a SQL Warehouse using the SQL language, which analysts are commonly more familiar with.
 
 The common Lakehouse best practice of Bronze-Silver-Gold (medallion architecture) will store and transform the data as follows:
 - Bronze = raw data
-- Silver = cleansed and conformed data: Delta tables storing data cleansed, validates, and with missing values imputed
-- Gold = presentation data: stored in Delta tables for further querying, with an abstraction layer of Views for end-clients to read from
+- Silver = cleansed and conformed data
+- Gold = presentation data
 
 **Bronze**
-Daily CSV files are dropped in a Blob store.  File writes trigger AutoLoader to read the data and convert to Bronze Delta tables with the same schema, but with metadata columns added to aid with potential future tasks like dealing with late-arriving data.
+Daily CSV files are dropped in a Blob store.  A Workflow reads the data and converts it to Bronze Delta tables with the same schema, but with audit columns added to aid with potential future tasks like dealing with late-arriving data.
 
 **Silver**
 Reads the data in Bronze and:
 - conforms table and column names
-- de-normalizes key columns
+- de-normalizes the timestamp column
 - validates row completeness, and imputes missing values where necessary
 - validates data ranges
+
+  **Gold**
+  The 'presentable' version of the data.  The table includes columns indicating which rows had values imputed (for audit and data quality purposes), but these columns are not exposed in the View on top of the Gold table.
+  Dashboards read from the Views and provide an easily-accessible summary of the data including:
+  - min
+  - max
+  - avg
+  of each turbine per hour per day.
 
 
 ## Out of Scope
@@ -50,3 +58,8 @@ This solution has been designed and built on a 'proof of concept' basis.  Out of
 - environments (dev, test, or prod)
 - CI/CD
 - Infrastructure as Code
+
+CI/CD for this solution can be accomplished using Databricks Asset Bundles:  
+https://docs.databricks.com/en/dev-tools/bundles/index.html
+
+Also out of scope because of limitations on MSDN Azure Subscriptions is integration with Unity Catalog.  And some of the Premium features are only available for a 14-day period.
